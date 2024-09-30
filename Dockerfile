@@ -5,7 +5,7 @@ RUN mvn -f /home/app/pom.xml clean package -DskipTests
 
 FROM openjdk:18-jdk-slim
 
-COPY --from=build /home/app/target/travelagency-0.0.1-SNAPSHOT.jar /app/travelagency.jar
+COPY --from=build /home/app/target/travelAgency-0.0.1-SNAPSHOT.jar /app/travelagency.jar
 WORKDIR /app
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/travelagency.jar"]
