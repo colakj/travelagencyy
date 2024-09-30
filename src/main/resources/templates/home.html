@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trips</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .hero {
+            background-image: url('https://mrwallpaper.com/images/hd/beautiful-sea-palm-tree-boat-4o8t57mo6owrzhao.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            height: 900px; /* Adjust as needed */
+            position: relative;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .logout-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white !important;
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-decoration: none !important;
+        }
+
+        .logout-icon:hover {
+            transform: scale(1.1);
+            color: white !important;
+            text-decoration: none !important;
+        }
+
+        .trip-card {
+            width: 18rem;
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .trip-card:hover {
+            transform: scale(1.05);
+        }
+
+        .trip-img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .trip-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .trip-days {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #17a2b8;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        .card-actions {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+<div class="hero">
+    <div class="ml-auto">
+        <form id="logoutForm" th:action="@{/logout}" method="post" style="display: none;">
+            <input type="hidden" value="$Logout">
+        </form>
+        <<a class="fas fa-sign-out-alt logout-icon" href="#" onclick="document.getElementById('logoutForm').submit();"> Odjavi se</a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2>Dostupna putovanja</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="trip : ${trips}">
+            <div class="card trip-card">
+                <img th:src="${trip.imageUrl}" class="card-img-top trip-img" alt="Trip Image">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${trip.placeName}"></h5>
+                    <p class="card-text" th:text="${trip.description}"></p>
+                    <p class="trip-price">Cijena: BAM <span th:text="${trip.price}"></span></p>
+                    <p class="trip-days">Trajanje: <span th:text="${trip.numberOfDays}"></span> dana</p>
+                    <p class="trip-dates">Od:
+                        <span th:text="${trip.getFormattedDateFrom()}"></span>
+                        <br>
+                        Do:
+                        <span th:text="${trip.getFormattedDateTo()}"></span>
+                    </p>
+                </div>
+                <div class="card-actions">
+                    <button type="button" class="btn btn-sm btn-primary btn-icon" data-toggle="modal" data-target="#editTripModal" th:data-id="${trip.id}"
+                            th:data-place="${trip.placeName}"
+                            th:data-description="${trip.description}"
+                            th:data-date-from="${trip.dateFrom}"
+                            th:data-date-to="${trip.dateTo}"
+                            th:data-image-url="${trip.imageUrl}"
+                            th:data-price="${trip.price}"
+                            onclick="loadTrip(this)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger btn-icon" data-toggle="modal" data-target="#deleteModal" th:attr="data-trip-id=${trip.id}" title="Delete">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="my-4">Dodaj novo putovanje</h2>
+    <form th:action="@{/trips}" method="post">
+        <div class="mb-3">
+            <label for="placeName" class="form-label">Mjesto</label>
+            <input type="text" class="form-control" id="placeName" name="placeName" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Opis</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="dateFrom" class="form-label">Datum polaska</label>
+            <input type="date" class="form-control" id="dateFrom" name="dateFrom" required>
+        </div>
+        <div class="mb-3">
+            <label for="dateTo" class="form-label">Datum odlaska</label>
+            <input type="date" class="form-control" id="dateTo" name="dateTo" required>
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Cijena</label>
+            <input type="number" class="form-control" id="price" name="price" required>
+        </div>
+        <div class="mb-3">
+            <label for="imageUrl" class="form-label">URL slike</label>
+            <input type="url" class="form-control" id="imageUrl" name="imageUrl" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Dodaj putovanje</button>
+    </form>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Potvrdi brisanje</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Jeste li sigurni da želite obrisati ovo putovanje?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Poništi</button>
+                <a href="#" class="btn btn-danger" id="confirmDeleteBtn">Potvrdi</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editTripModal" tabindex="-1" aria-labelledby="editTripModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTripModalLabel">Uredi putovanje</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/edit}" th:object="${Trip}" method="post">
+                    <input type="hidden" th:field="*{id}" id="editTripId">
+                    <div class="form-group">
+                        <label for="editPlaceName">Mjesto</label>
+                        <input type="text" th:field="*{placeName}" class="form-control" id="editPlaceName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Opis</label>
+                        <input type="text" th:field="*{description}" class="form-control" id="editDescription">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDateFrom" class="form-label">Datum polaska</label>
+                        <input type="date" class="form-control" id="editDateFrom" th:field="*{dateFrom}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDateTo" class="form-label">Datum odlaska</label>
+                        <input type="date" class="form-control" id="editDateTo" th:field="*{dateTo}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editImageUrl">URL slike</label>
+                        <input type="text" th:field="*{imageUrl}" class="form-control" id="editImageUrl">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPrice">Cijena</label>
+                        <input type="number" th:field="*{price}" class="form-control" id="editPrice" step="0.01">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Spremi promjene</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function loadTrip(button) {
+        const tripId = button.getAttribute('data-id');
+        const placeName = button.getAttribute('data-place');
+        const description = button.getAttribute('data-description');
+        const dateFrom = button.getAttribute('data-date-from');
+        const dateTo = button.getAttribute('data-date-to');
+        const imageUrl = button.getAttribute('data-image-url');
+        const price = button.getAttribute('data-price');
+
+        document.getElementById('editTripId').value = tripId;
+        document.getElementById('editPlaceName').value = placeName;
+        document.getElementById('editDescription').value = description;
+        document.getElementById('editDateFrom').value = dateFrom;
+        document.getElementById('editDateTo').value = dateTo;
+        document.getElementById('editImageUrl').value = imageUrl;
+        document.getElementById('editPrice').value = price;
+
+        $('#editTripModal').modal('show');
+    }
+
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('shown.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const tripId = button.getAttribute('data-trip-id');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        console.log(tripId)
+        confirmDeleteBtn.setAttribute('href', `/delete/${tripId}`);
+    });
+</script>
+</body>
+</html>

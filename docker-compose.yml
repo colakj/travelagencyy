@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  travelagncy:
+    build: .
+    container_name: travelagncy
+    image: travelagncy:latest
+    environment:
+      - MYSQL_HOST=mysql
+    ports:
+      - "80:8080"
+    networks:
+      - travelagncy-network
+    depends_on:
+      - mysql
+    restart: always
+
+  mysql:
+    container_name: mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    networks:
+      - travelagncy-network
+    env
