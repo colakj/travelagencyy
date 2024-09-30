@@ -22,4 +22,18 @@ services:
       - "3306:3306"
     networks:
       - travelagncy-network
-    env
+    environment:
+      - MYSQL_ROOT_PASSWORD=lozinka
+      - MYSQL_DATABASE=travelagncy
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=lozinka
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+
+networks:
+  travelagncy-network:
+    driver: bridge
+volumes:
+  mysql-data:
+  java-data:
