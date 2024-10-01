@@ -1,15 +1,15 @@
 version: "3.7"
 services:
-  travelagncy:
+  travelagency:
     build: .
-    container_name: travelagncy
-    image: travelagncy:latest
+    container_name: travelagency
+    image: travelagency:latest
     environment:
       - MYSQL_HOST=mysql
     ports:
       - "80:8080"
     networks:
-      - travelagncy-network
+      - travelagency-network
     depends_on:
       - mysql
     restart: always
@@ -21,10 +21,10 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - travelagncy-network
+      - travelagency-network
     environment:
       - MYSQL_ROOT_PASSWORD=lozinka
-      - MYSQL_DATABASE=travelagncy
+      - MYSQL_DATABASE=travelagency
       - MYSQL_USER=user
       - MYSQL_PASSWORD=lozinka
     volumes:
@@ -32,7 +32,7 @@ services:
     restart: always
 
 networks:
-  travelagncy-network:
+  travelagency-network:
     driver: bridge
 volumes:
   mysql-data:
